@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Camera" transform="translate(-44.000000, -54.000000)" stroke="#000000" stroke-width="2">
+            <g id="Group" transform="translate(45.000000, 55.000000)">
+                <g id="user" transform="translate(7.000000, 7.000000)">
+                    <path d="M16,22 L16,19 C16,15.6862915 14.209139,13 12,13 L4,13 C1.790861,13 0,15.6862915 0,19 L0,22" id="Path"></path>
+                    <circle id="Oval" cx="8.5" cy="4.5" r="4.5"></circle>
+                </g>
+                <g id="film">
+                    <rect id="Rectangle" x="0" y="0" width="30" height="30" rx="2.18"></rect>
+                    <path d="M6,0 L6,30" id="Path"></path>
+                    <path d="M24,0 L24,30" id="Path"></path>
+                    <path d="M0,15 L6,15" id="Path"></path>
+                    <path d="M24,15 L30,15" id="Path"></path>
+                    <path d="M0,8 L6,8" id="Path"></path>
+                    <path d="M0,23 L6,23" id="Path"></path>
+                    <path d="M24,23 L30,23" id="Path"></path>
+                    <path d="M24,8 L30,8" id="Path"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

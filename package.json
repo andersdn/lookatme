@@ -1,0 +1,46 @@
+{
+  "name": "look-at-me",
+  "version": "1.0.0",
+  "description": "It's you but floating",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder"
+  },
+  "repository": "https://github.com/andersdn/lookatme",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+
+  "author": "GitHub",
+  "license": "GPL-3",
+  "devDependencies": {
+    "electron": "^10.1.1",
+    "electron-builder": "^22.9.1",
+    "prettier": "^2.2.1"
+  },
+  "build": {
+    "appId": "com.andersdn.lookatme",
+    "mac": {
+      "category": "public.app-category.utilities",
+      "entitlements": "./build/entitlements.mac.plist",
+      "hardenedRuntime": false,
+      "extendInfo": {
+        "NSCameraUsageDescription": "This app requires camera access to record video.",
+        "NSMicrophoneUsageDescription": "This app requires microphone access to record audio."
+      }
+    }
+  },
+  "dependencies": {
+    "@tensorflow-models/body-pix": "^2.0.5",
+    "@tensorflow/tfjs": "^2.7.0",
+    "@tensorflow/tfjs-converter": "^2.7.0",
+    "@tensorflow/tfjs-core": "^2.7.0",
+    "tfjs": "^0.6.0"
+  }
+}
