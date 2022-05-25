@@ -5,19 +5,33 @@ require('@tensorflow/tfjs');
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const nocamera = document.getElementById('nocamera');
+const windowFrame = document.getElementsByTagName('main')[0]
 
 const windowTopBar = document.createElement('div');
 windowTopBar.className = 'windowTopBar';
 windowTopBar.style.webkitAppRegion = 'drag';
-document.body.appendChild(windowTopBar);
+document.getElementById('mainWindow').appendChild(windowTopBar);
+
+windowTopBar.onmouseover = windowTopBar.onmouseout = handler;
+
+function handler(event) {
+  let type = event.type;
+  ipcRenderer.send(
+    'setIgnoreMouseEvents',
+    type === 'mouseout' ? true : false
+  );
+}
 
 let selectedCamera = false;
 let selectedFilter = false;
-let selectedSize = 1;
+let selectedSize = 0.5;
 
 let currentStream;
 
 async function perform(net) {
+
+// console.log('selectedFilter',selectedFilter)
+
   if (selectedFilter === 'blur' || selectedFilter === 'blurblur') {
     const segmentation = await net.segmentPerson(video);
     const backgroundBlurAmount = selectedFilter === 'blurblur' ? 10 : 5;
@@ -43,6 +57,7 @@ async function perform(net) {
     canvas.style.display = 'block';
     canvas.width = video.width;
     canvas.height = video.height;
+
     let context = canvas.getContext('2d');
     context.drawImage(video, 0, 0);
     let imageData = context.getImageData(0, 0, video.width, video.height);
@@ -71,10 +86,10 @@ async function perform(net) {
 function loadBodyPix() {
   options = {
     multiplier: 0.75,
-    stride: 32,
-    quantBytes: 4,
+    // stride: 32,
+    quantBytes: 2,
 
-    // outputStride: 16,
+    outputStride: 16,
     // multiplier: 1,
     // quantBytes: 2
   };
@@ -100,6 +115,9 @@ const setSize = () => {
   canvas.style.height = ar * baseSize + 'px';
   video.style.width = baseSize + 'px';
   video.style.height = ar * baseSize + 'px';
+
+  document.getElementById('mainWindow').style['clip-path'] = 'circle(' + Math.min(baseSize,(ar * baseSize))*0.5 + 'px at center)';
+
   ipcRenderer.send(
     'set-size',
     JSON.stringify({
@@ -170,7 +188,9 @@ function gotDevices(mediaDevices) {
 }
 
 ipcRenderer.on('set-filter', function (event, newFilter) {
+  // console.log('got filter',event,newFilter);
   selectedFilter = newFilter;
+  loadBodyPix(); // just incase we were false before
 });
 
 ipcRenderer.on('set-size', function (event, newSize) {
@@ -181,5 +201,6 @@ ipcRenderer.on('set-size', function (event, newSize) {
 ipcRenderer.on('set-camera', function (event, deviceId) {
   setActiveCamera(deviceId);
 });
+
 
 navigator.mediaDevices.enumerateDevices().then(gotDevices);

@@ -4,12 +4,13 @@ const path = require('path');
 const is_mac = process.platform === 'darwin';
 
 let mainWindow = '',
-  selectedSize = 1,
+  selectedSize = 0.5,
   selectedCamera = false,
   selectedFilter = false,
   prevCameraList,
+  ignoreMouse = false
   tray = null;
-const iconPath = path.join(__dirname, 'icon.png');
+const iconPath = path.join(__dirname, 'iconTemplate.png');
 let deviceList = [{ label: 'Loading Cameras...', enabled: false }];
 
 if (is_mac) {
@@ -62,6 +63,7 @@ app.whenReady().then(async () => {
   mainWindow.setResizable(false); // todo: change if resizing is a thing
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
+  mainWindow.setIgnoreMouseEvents(true);
 
   await askForMediaAccess();
 
@@ -78,8 +80,10 @@ app.whenReady().then(async () => {
     mainWindow.webContents.send('set-camera', cameraName);
   };
   const setSize = (sizeVal) => {
+    mainWindow.center();
     mainWindow.webContents.send('set-size', sizeVal);
   };
+
 
   // the tray menu
   tray = new Tray(iconPath);
@@ -123,7 +127,7 @@ app.whenReady().then(async () => {
       },
       {
         click: () => setFilter('clip'),
-        label: 'Hide Background ᴮᴱᵀᴬ',
+        label: 'Hide Background',
         type: 'radio',
         checked: selectedFilter == 'clip',
       },
@@ -145,7 +149,7 @@ app.whenReady().then(async () => {
           },
           {
             click: () => setSize(1),
-            label: 'Default',
+            label: '1',
             type: 'radio',
             checked: selectedSize == 1,
           },
@@ -171,6 +175,7 @@ app.whenReady().then(async () => {
       },
       { type: 'separator' },
       { label: 'Help', role: 'help', click : ()=>shell.openExternal('https://andersdn.github.io/lookatme/')},
+      { label: 'Recenter Window', click : ()=>mainWindow.center()},
       { label: 'Quit', accelerator: 'CommandOrControl+Q', role: 'quit' },
     ]);
     tray.setContextMenu(contextMenu);
@@ -200,8 +205,13 @@ app.whenReady().then(async () => {
     selectedFilter = settingsObj.selectedFilter;
     SetTray();
     await askForMediaAccess();
-
   });
+
+  ipcMain.on('setIgnoreMouseEvents', async (event, mouseVal) => {
+    mainWindow.setIgnoreMouseEvents(mouseVal);
+  });
+  
+
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

@@ -1,8 +1,8 @@
 {
-  "name": "look-at-me",
+  "name": "Look At Me",
   "version": "1.0.0",
   "description": "It's you but floating",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
@@ -10,14 +10,11 @@
   },
   "repository": "https://github.com/andersdn/lookatme",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Webcam",
+    "floating",
+    "presentation"
   ],
-
-  "author": "GitHub",
+  "author": "Anders DN",
   "license": "GPL-3",
   "devDependencies": {
     "electron": "^10.1.1",
