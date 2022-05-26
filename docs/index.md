@@ -2,9 +2,18 @@
 
 _Look At Me_ is a utility app to have a floating version of you over your screen for when presenting
 
+- [Installing](#installing)
+- [Usage](#usage)
+- [FAQ / Quirks](#faq)
+
 > This is an _early_ alpha release so there will be updates in the near future
 
-# Installing
+
+----
+
+# [Download v0.0.1](https://github.com/andersdn/lookatme/releases/download/v0.0.1/Look.At.Me-0.0.1.dmg)
+
+# <a name="#installing"></a> Installing
 
 Drag the app to your applications folder
 
@@ -35,7 +44,11 @@ Bypass the block in your Security & Privacy settings. If the previous method did
 7. Look for “Look at me was blocked from opening because it is not from an identified developer” and click Open Anyway. (In older versions of macOS, you could click Anywhere and then click Allow From Anywhere.)
 8. Try rerunning the app.
 
-# Usage
+## Permissions
+
+Provide camera permissions on launch
+
+# <a name="#installing"></a> Usage
 
 ## Moving the window
 
@@ -63,3 +76,10 @@ Move the window around hovering on your floating window and dragging on the `✥
     - Takes you here
 - 🚪 Quit
     - Cya, thanks for playing
+
+
+# <a name="#faq"></a> FAQ / Quirks
+
+- The app needs to re-launch after getting permissions so may be abit wierd on the first try
+- When moving the window, sometimes you need to focus on another app and then move back to the window to get focus
+
