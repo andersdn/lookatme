@@ -1,6 +1,6 @@
 {
   "name": "Look At Me",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "It's you but floating",
   "main": "src/main.js",
   "scripts": {
