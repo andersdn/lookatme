@@ -1,5 +1,6 @@
 {
-  "name": "Look At Me",
+  "name": "look-at-me",
+  "productName": "Look At Me",
   "version": "0.0.1",
   "description": "It's you but floating",
   "main": "src/main.js",
