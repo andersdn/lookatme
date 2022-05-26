@@ -38,6 +38,7 @@
     "@tensorflow/tfjs": "^2.7.0",
     "@tensorflow/tfjs-converter": "^2.7.0",
     "@tensorflow/tfjs-core": "^2.7.0",
+    "electron-context-menu": "^3.1.2",
     "tfjs": "^0.6.0"
   }
 }

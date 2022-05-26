@@ -12,21 +12,24 @@ windowTopBar.className = 'windowTopBar';
 windowTopBar.style.webkitAppRegion = 'drag';
 document.getElementById('mainWindow').appendChild(windowTopBar);
 
+let selectedCamera = false;
+let selectedFilter = 'blur';
+let selectedSize = 0.5;
+let selectedIgnoreMouse = false;
+
+let currentStream;
+
 windowTopBar.onmouseover = windowTopBar.onmouseout = handler;
 
 function handler(event) {
-  let type = event.type;
-  ipcRenderer.send(
-    'setIgnoreMouseEvents',
-    type === 'mouseout' ? true : false
-  );
+  if(selectedIgnoreMouse){
+    let type = event.type;
+    ipcRenderer.send(
+      'setIgnoreMouseEvents',
+      type === 'mouseout' ? true : false
+    );
+  }
 }
-
-let selectedCamera = false;
-let selectedFilter = false;
-let selectedSize = 0.5;
-
-let currentStream;
 
 async function perform(net) {
 
@@ -126,6 +129,17 @@ const setSize = () => {
       height: ar * baseSize,
     })
   );
+
+  ipcRenderer.send(
+    'update-settings',
+    JSON.stringify({
+      selectedSize: selectedSize,
+      selectedCamera: selectedCamera,
+      selectedFilter: selectedFilter,
+      selectedIgnoreMouse: selectedIgnoreMouse
+    })
+  );
+
 };
 
 const setActiveCamera = (deviceId) => {
@@ -167,6 +181,7 @@ const setActiveCamera = (deviceId) => {
       selectedSize: selectedSize,
       selectedCamera: selectedCamera,
       selectedFilter: selectedFilter,
+      selectedIgnoreMouse: selectedIgnoreMouse
     })
   );
 };
@@ -201,6 +216,22 @@ ipcRenderer.on('set-size', function (event, newSize) {
 ipcRenderer.on('set-camera', function (event, deviceId) {
   setActiveCamera(deviceId);
 });
+
+ipcRenderer.on('set-ignore-mouse', function (event, shouldIgnoreMouse) {
+  selectedIgnoreMouse = shouldIgnoreMouse;
+
+  ipcRenderer.send(
+    'update-settings',
+    JSON.stringify({
+      selectedSize: selectedSize,
+      selectedCamera: selectedCamera,
+      selectedFilter: selectedFilter,
+      selectedIgnoreMouse: selectedIgnoreMouse
+    })
+  );
+
+});
+
 
 
 navigator.mediaDevices.enumerateDevices().then(gotDevices);

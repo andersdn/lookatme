@@ -1,17 +1,20 @@
 // Modules to control application life and create native browser window
 const { shell, app, ipcMain, Menu, Tray, BrowserWindow, systemPreferences } = require('electron');
 const path = require('path');
+const contextMenu = require('electron-context-menu');
 const is_mac = process.platform === 'darwin';
 
-let mainWindow = '',
-  selectedSize = 0.5,
-  selectedCamera = false,
-  selectedFilter = false,
-  prevCameraList,
-  ignoreMouse = false
-  tray = null;
+let mainWindow = '';
+// set globals
+global.selectedSize = 0.5;
+global.selectedCamera = false;
+global.selectedFilter = 'blur';
+global.prevCameraList = null;
+global.selectedIgnoreMouse = false;
+global.tray = null;
+
 const iconPath = path.join(__dirname, 'iconTemplate.png');
-let deviceList = [{ label: 'Loading Cameras...', enabled: false }];
+global.deviceList = [{ label: 'Loading Cameras...', enabled: false }];
 
 if (is_mac) {
   // https://syobochim.medium.com/electron-keep-apps-on-top-whether-in-full-screen-mode-or-on-other-desktops-d7d914579fce
@@ -63,7 +66,7 @@ app.whenReady().then(async () => {
   mainWindow.setResizable(false); // todo: change if resizing is a thing
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');
-  mainWindow.setIgnoreMouseEvents(true);
+  
 
   await askForMediaAccess();
 
@@ -73,24 +76,116 @@ app.whenReady().then(async () => {
 
 
   const setFilter = (filterName) => {
+    global.selectedFilter = filterName;
     mainWindow.webContents.send('set-filter', filterName);
   };
   const setCamera = (cameraName) => {
-    selectedCamera = cameraName;
+    global.selectedCamera = cameraName;
     mainWindow.webContents.send('set-camera', cameraName);
   };
+  const toggleIgnoreMouse = () => {
+    global.selectedIgnoreMouse = !global.selectedIgnoreMouse;
+    mainWindow.setIgnoreMouseEvents(global.selectedIgnoreMouse);
+    mainWindow.webContents.send('set-ignore-mouse', global.selectedIgnoreMouse);
+  }
   const setSize = (sizeVal) => {
+    global.selectedSize = sizeVal;
     mainWindow.center();
     mainWindow.webContents.send('set-size', sizeVal);
   };
 
+
+  const menuOptions = ()=>{
+    return [
+    { label: 'Look At Me', enabled: false },
+    { type: 'separator' },
+    { label: '📷 Choose Camera:', submenu: [...deviceList] },
+    { label: '✨ Choose Filter:', 
+    submenu: [
+    {
+      click: () => setFilter('none'),
+      label: 'None',
+      type: 'radio',
+      checked: global.selectedFilter == 'none',
+    },
+    {
+      click: () => setFilter('blur'),
+      label: 'Blur (Default)',
+      type: 'radio',
+      checked: global.selectedFilter == 'blur',
+    },
+    {
+      click: () => setFilter('blurblur'),
+      label: 'Blur More',
+      type: 'radio',
+      checked: global.selectedFilter == 'blurblur',
+    },
+    {
+      click: () => setFilter('clip'),
+      label: 'Hide Background',
+      type: 'radio',
+      checked: global.selectedFilter == 'clip',
+    }
+    ]},
+    {
+      label: '📏 Choose Size:',
+      submenu: [
+        {
+          click: () => setSize(2),
+          label: '2x',
+          type: 'radio',
+          checked: global.selectedFilter == 2,
+        },
+        {
+          click: () => setSize(1.5),
+          label: '1.5x',
+          type: 'radio',
+          checked: global.selectedSize == 1.5,
+        },
+        {
+          click: () => setSize(1),
+          label: '1',
+          type: 'radio',
+          checked: global.selectedSize == 1,
+        },
+        {
+          click: () => setSize(0.75),
+          label: '0.75x',
+          type: 'radio',
+          checked: global.selectedSize == 0.75,
+        },
+        {
+          click: () => setSize(0.5),
+          label: '0.5x',
+          type: 'radio',
+          checked: global.selectedSize == 0.5,
+        },
+        {
+          click: () => setSize(0.25),
+          label: '0.25x',
+          type: 'radio',
+          checked: global.selectedSize == 0.25,
+        },
+      ],
+    },
+    { label: '🤷 Recenter Window', click : ()=>mainWindow.center()},
+    {
+      click: () => toggleIgnoreMouse(),
+      label: '🐁 Ignore Mouse Events',
+      type: 'checkbox',
+      checked: !!global.selectedIgnoreMouse,
+    },
+    { type: 'separator' },
+    { label: 'ℹ️ About / Help', role: 'help', click : ()=>shell.openExternal('https://andersdn.github.io/lookatme/')},
+    { label: '🚪 Quit', accelerator: 'CommandOrControl+Q', role: 'quit' },
+  ]};
 
   // the tray menu
   tray = new Tray(iconPath);
 
   const SetTray = () => {
     if (prevCameraList) {
-      deviceList = prevCameraList.map((c, i) => {
+      global.deviceList = prevCameraList.map((c, i) => {
         return {
           click: () => setCamera(c.deviceId),
           label: c.label,
@@ -100,116 +195,55 @@ app.whenReady().then(async () => {
       });
     }
 
-    const contextMenu = Menu.buildFromTemplate([
-      { label: 'Look At Me', enabled: false },
-      { type: 'separator' },
-      { label: 'Choose Camera:', enabled: false },
-      ...deviceList,
-      { type: 'separator' },
-      { label: 'Choose View:', enabled: false },
-      {
-        click: () => setFilter('none'),
-        label: 'None (Default)',
-        type: 'radio',
-        checked: selectedFilter == 'none',
-      },
-      {
-        click: () => setFilter('blur'),
-        label: 'Blur',
-        type: 'radio',
-        checked: selectedFilter == 'blur',
-      },
-      {
-        click: () => setFilter('blurblur'),
-        label: 'Blur More',
-        type: 'radio',
-        checked: selectedFilter == 'blurblur',
-      },
-      {
-        click: () => setFilter('clip'),
-        label: 'Hide Background',
-        type: 'radio',
-        checked: selectedFilter == 'clip',
-      },
-      { type: 'separator' },
-      {
-        label: 'Choose Size:',
-        submenu: [
-          {
-            click: () => setSize(2),
-            label: '2x',
-            type: 'radio',
-            checked: selectedFilter == 2,
-          },
-          {
-            click: () => setSize(1.5),
-            label: '1.5x',
-            type: 'radio',
-            checked: selectedSize == 1.5,
-          },
-          {
-            click: () => setSize(1),
-            label: '1',
-            type: 'radio',
-            checked: selectedSize == 1,
-          },
-          {
-            click: () => setSize(0.75),
-            label: '0.75x',
-            type: 'radio',
-            checked: selectedSize == 0.75,
-          },
-          {
-            click: () => setSize(0.5),
-            label: '0.5x',
-            type: 'radio',
-            checked: selectedSize == 0.5,
-          },
-          {
-            click: () => setSize(0.25),
-            label: '0.25x',
-            type: 'radio',
-            checked: selectedSize == 0.25,
-          },
-        ],
-      },
-      { type: 'separator' },
-      { label: 'Help', role: 'help', click : ()=>shell.openExternal('https://andersdn.github.io/lookatme/')},
-      { label: 'Recenter Window', click : ()=>mainWindow.center()},
-      { label: 'Quit', accelerator: 'CommandOrControl+Q', role: 'quit' },
-    ]);
+    const contextMenu = Menu.buildFromTemplate(menuOptions());
     tray.setContextMenu(contextMenu);
   };
 
-  SetTray();
+  const SetRightClickContextMenu = () => {
+    contextMenu({
+      prepend: (params, browserWindow) => menuOptions()
+    });
+  }
+
+  const SetMenus = () => {
+    SetTray();
+    SetRightClickContextMenu();
+  }
+  
+  
+  
 
   ipcMain.on('camera-list', async (event, data) => {
     let cameraList = JSON.parse(data);
     // debuounce the camera list
-    prevCameraList = cameraList;
-    SetTray();
+    global.prevCameraList = cameraList;
+    SetMenus();
     await askForMediaAccess();
   });
 
   ipcMain.on('set-size', async (event, data) => {
     let sizeObj = JSON.parse(data);
     mainWindow.setSize(sizeObj.width, sizeObj.height);
-    selectedSize = sizeObj.selectedSize;
-    SetTray();
+    global.selectedSize = sizeObj.selectedSize;
+    SetMenus();
   });
 
   ipcMain.on('update-settings', async (event, data) => {
     let settingsObj = JSON.parse(data);
-    selectedSize = settingsObj.selectedSize;
-    selectedCamera = settingsObj.selectedCamera;
-    selectedFilter = settingsObj.selectedFilter;
-    SetTray();
+    global.selectedSize = settingsObj.selectedSize;
+    global.selectedCamera = settingsObj.selectedCamera;
+    global.selectedFilter = settingsObj.selectedFilter;
+    global.selectedIgnoreMouse = settingsObj.selectedIgnoreMouse;
+    SetMenus();
     await askForMediaAccess();
   });
 
-  ipcMain.on('setIgnoreMouseEvents', async (event, mouseVal) => {
-    mainWindow.setIgnoreMouseEvents(mouseVal);
-  });
+  // should be in update settings
+  // ipcMain.on('set-ignore-mouse', async (event, mouseVal) => {
+  //   global.ignoreMouse = mouseVal;
+  //   mainWindow.setIgnoreMouseEvents(mouseVal);
+  //   SetMenus();
+  // });
   
 
 });
