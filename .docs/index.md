@@ -8,6 +8,11 @@ _Look At Me_ is a utility app to have a floating version of you over your screen
 
 > This is an _early_ alpha release so there will be updates in the near future
 
+
+----
+
+# [Download v0.0.1](https://github.com/andersdn/lookatme/releases/download/v0.0.1/Look.At.Me-0.0.1.dmg)
+
 # <a name="#installing"></a> Installing
 
 Drag the app to your applications folder
