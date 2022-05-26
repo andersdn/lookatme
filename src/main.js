@@ -33,6 +33,10 @@ async function askForMediaAccess(){
     if (status === "not-determined") {
       const success = await systemPreferences.askForMediaAccess("camera");
       console.info("Result of camera access:", success.valueOf() ? "granted" : "denied");
+
+      app.relaunch();
+      app.exit();
+
       return success.valueOf();
     }
 
