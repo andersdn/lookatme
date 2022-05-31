@@ -11,6 +11,7 @@ global.selectedCamera = false;
 global.selectedFilter = 'blur';
 global.prevCameraList = null;
 global.selectedIgnoreMouse = false;
+global.mirrorCamera = false;
 global.tray = null;
 
 const iconPath = path.join(__dirname, 'iconTemplate.png');
@@ -91,6 +92,10 @@ app.whenReady().then(async () => {
     global.selectedIgnoreMouse = !global.selectedIgnoreMouse;
     mainWindow.setIgnoreMouseEvents(global.selectedIgnoreMouse);
     mainWindow.webContents.send('set-ignore-mouse', global.selectedIgnoreMouse);
+  }
+  const toggleMirrorCamera = () => {
+    global.mirrorCamera = !global.mirrorCamera;
+    mainWindow.webContents.send('set-mirror-camera', global.mirrorCamera);
   }
   const setSize = (sizeVal) => {
     global.selectedSize = sizeVal;
@@ -178,6 +183,12 @@ app.whenReady().then(async () => {
       label: '🐁 Ignore Mouse Events',
       type: 'checkbox',
       checked: !!global.selectedIgnoreMouse,
+    },
+    {
+      click: () => toggleMirrorCamera(),
+      label: '🪞 Mirror Camera',
+      type: 'checkbox',
+      checked: !!global.mirrorCamera,
     },
     { type: 'separator' },
     { label: 'ℹ️ About / Help', role: 'help', click : ()=>shell.openExternal('https://andersdn.github.io/lookatme/')},

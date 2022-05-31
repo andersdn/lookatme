@@ -76,6 +76,8 @@ Move the window around hovering on your floating window and dragging on the `✥
     - If you have resized your window somtimes you can accidelty move the resize icon off screen, so this option brings it back to the ceter of your screen.
 - 🐁 Ignore Mouse Events
     - Disables mouse events and locks the position of the window
+- 🪞 Mirror Camera
+    - Flips the camera
 - ℹ️ About / Help
     - Takes you here
 - 🚪 Quit

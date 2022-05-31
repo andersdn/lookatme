@@ -16,6 +16,7 @@ let selectedCamera = false;
 let selectedFilter = 'blur';
 let selectedSize = 0.5;
 let selectedIgnoreMouse = false;
+let selectedMirrorCamera = false;
 
 let currentStream;
 
@@ -136,7 +137,8 @@ const setSize = () => {
       selectedSize: selectedSize,
       selectedCamera: selectedCamera,
       selectedFilter: selectedFilter,
-      selectedIgnoreMouse: selectedIgnoreMouse
+      selectedIgnoreMouse: selectedIgnoreMouse,
+      selectedMirrorCamera: selectedMirrorCamera
     })
   );
 
@@ -181,7 +183,8 @@ const setActiveCamera = (deviceId) => {
       selectedSize: selectedSize,
       selectedCamera: selectedCamera,
       selectedFilter: selectedFilter,
-      selectedIgnoreMouse: selectedIgnoreMouse
+      selectedIgnoreMouse: selectedIgnoreMouse,
+      selectedMirrorCamera: selectedMirrorCamera
     })
   );
 };
@@ -226,7 +229,29 @@ ipcRenderer.on('set-ignore-mouse', function (event, shouldIgnoreMouse) {
       selectedSize: selectedSize,
       selectedCamera: selectedCamera,
       selectedFilter: selectedFilter,
-      selectedIgnoreMouse: selectedIgnoreMouse
+      selectedIgnoreMouse: selectedIgnoreMouse,
+      selectedMirrorCamera: selectedMirrorCamera
+    })
+  );
+
+});
+
+ipcRenderer.on('set-mirror-camera', function (event, shouldMirrorCamera) {
+  selectedMirrorCamera = shouldMirrorCamera;
+  if(selectedMirrorCamera){
+    document.getElementById('mainWindow').classList.add("mirrorCamera");
+  } else {
+    document.getElementById('mainWindow').classList.remove("mirrorCamera");
+  }
+  
+  ipcRenderer.send(
+    'update-settings',
+    JSON.stringify({
+      selectedSize: selectedSize,
+      selectedCamera: selectedCamera,
+      selectedFilter: selectedFilter,
+      selectedIgnoreMouse: selectedIgnoreMouse,
+      selectedMirrorCamera: selectedMirrorCamera
     })
   );
 
