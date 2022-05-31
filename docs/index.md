@@ -8,6 +8,10 @@ _Look At Me_ is a utility app to have a floating version of you over your screen
 
 > This is an _early_ alpha release so there will be updates in the near future
 
+## Demo Video
+![Demo video](look-at-me-001_demo.webp)
+> Video is only 5fps here to save bandwidth, actual camera feed is full speed and not compressed.
+
 
 ----
 
